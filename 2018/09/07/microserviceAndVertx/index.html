@@ -5,13 +5,13 @@
   
 
   
-  <title>微服务和Vertx | Hexo</title>
+  <title>微服务和Vertx | Tech</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="微服务和Vertx什么是微服务微服务是一种架构风格， 一个大型复杂软件由一个或者多个微服务组成， 系统中的每个微服务可以独立部署， 各个微服务之间是松耦合的。 每个微服务仅关注与完成一件任务并很好的完成这个任务。 每个任务代表着一个小的业务能力。  每个服务之间通过restful 和rpc 的方式， 相互调用。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="微服务和Vertx">
 <meta property="og:url" content="http://yoursite.com/2018/09/07/microserviceAndVertx/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Tech">
 <meta property="og:description" content="微服务和Vertx什么是微服务微服务是一种架构风格， 一个大型复杂软件由一个或者多个微服务组成， 系统中的每个微服务可以独立部署， 各个微服务之间是松耦合的。 每个微服务仅关注与完成一件任务并很好的完成这个任务。 每个任务代表着一个小的业务能力。  每个服务之间通过restful 和rpc 的方式， 相互调用。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/2018/09/07/microserviceAndVertx/123.jpg">
@@ -23,7 +23,7 @@
 <meta name="twitter:description" content="微服务和Vertx什么是微服务微服务是一种架构风格， 一个大型复杂软件由一个或者多个微服务组成， 系统中的每个微服务可以独立部署， 各个微服务之间是松耦合的。 每个微服务仅关注与完成一件任务并很好的完成这个任务。 每个任务代表着一个小的业务能力。  每个服务之间通过restful 和rpc 的方式， 相互调用。">
 <meta name="twitter:image" content="http://yoursite.com/2018/09/07/microserviceAndVertx/123.jpg">
   
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="Tech" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -42,7 +42,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
+        <a href="/" id="logo">Tech</a>
       </h1>
       
     </div>
@@ -90,6 +90,11 @@
     
     <div class="article-entry" itemprop="articleBody">
       
+	    
+<div id="toc">
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#微服务和Vertx"><span class="toc-text">微服务和Vertx</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是微服务"><span class="toc-text">什么是微服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#历史的演化"><span class="toc-text">历史的演化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#要解决的几个问题"><span class="toc-text">要解决的几个问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何实现，-落地"><span class="toc-text">如何实现， 落地</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#微服务和SOA-的区别"><span class="toc-text">微服务和SOA 的区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是vertx"><span class="toc-text">什么是vertx</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#我司对微服务的实践"><span class="toc-text">我司对微服务的实践</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何基于vertx-构建微服务。"><span class="toc-text">如何基于vertx 构建微服务。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#QA"><span class="toc-text">QA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-为什么spring-cloud-netflix-设计eureka，-而不是直接用的zk"><span class="toc-text">1 为什么spring cloud netflix 设计eureka， 而不是直接用的zk</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-AMazon"><span class="toc-text">2 AMazon</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-在遗留系统如何做这件事情"><span class="toc-text">3 在遗留系统如何做这件事情</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TODO"><span class="toc-text">TODO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-text">参考</span></a></li></ol></li></ol>
+</div>
+
         <h1 id="微服务和Vertx"><a href="#微服务和Vertx" class="headerlink" title="微服务和Vertx"></a>微服务和Vertx</h1><h2 id="什么是微服务"><a href="#什么是微服务" class="headerlink" title="什么是微服务"></a>什么是微服务</h2><p>微服务是一种架构风格， 一个大型复杂软件由一个或者多个微服务组成， 系统中的每个微服务可以独立部署， 各个微服务之间是松耦合的。 每个微服务仅关注与完成一件任务并很好的完成这个任务。 每个任务代表着一个小的业务能力。 </p>
 <p>每个服务之间通过restful 和rpc 的方式， 相互调用。 </p>
 <a id="more"></a>
@@ -152,7 +157,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/09/07/microserviceAndVertx/" data-id="cjluo3bji00019ctv8qi16uq5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/09/07/microserviceAndVertx/" data-id="cjlusbbj10002xotvy2js5ga4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -186,12 +191,33 @@
           <aside id="sidebar">
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/">面试</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/题目/">题目</a></li></ul></li></ul>
+    </div>
+  </div>
+
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li></ul>
+    </div>
+  </div>
+
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/jvm/" style="font-size: 10px;">jvm</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/并发/" style="font-size: 10px;">并发</a>
+    </div>
+  </div>
+
   
     
   <div class="widget-wrap">
@@ -237,7 +263,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2018 John Doe<br>
+      &copy; 2018 hzhang<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
@@ -252,7 +278,7 @@
 </nav>
     
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
 
 
   <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
@@ -263,6 +289,15 @@
 
 
 
+<!-- 站内搜索-Swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script>
   </div>
 </body>
 </html>
