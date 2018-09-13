@@ -2,7 +2,9 @@
 ---
 title: java并发概述
 date: 2018-09-12 13:43:57
-tags: java, 并发
+tags: 
+- java
+- 并发
 ---
 
 # 自己的理解- 全貌
