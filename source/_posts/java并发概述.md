@@ -299,16 +299,119 @@ class MyCallable implements Callable{
 
 #### 信号量 Semaphore
 
+- 基本逻辑就是用了一个东西控制资源同时使用量。 如果没有拿到， 就等。 
+- 比如一个线程池， 如果用信号量来控制数目， semaphone 和 池子的大小一致， 这样的话如果没有资源的话， 就会阻塞在那里， 而不是直接拒绝。 
+- 另外的， 其实更简单的办法用blockingQueue 也是一样的。 
+
+- 原理就是信号量维护着一个许可证的池子， 如果有人acquire就减一， release 就加一。 如果没有了就等在这里， 知道中断或者有了资源。 
+- - 公平锁
+- - 非公平锁。  两者的区别是说 可以看到和非公平策略相比，就多了一个对阻塞队列的检查。如果非公平， 直接参与竞争。线程A一点时间都没等待就和线程B同等对待。 
+
+
+```
+      Semaphore sem = new Semaphore(1); 
+      
+      sem.acquire(); 
+      sem.release(); 
+```
 
 #### 栅栏 Barrier CyclicBarrier
+循环栅栏：CyclicBarrier
+
+想法就是等别的几个线程都执行完成了， 然后大家一起执行下面的工作。 
+和闭锁的区别呢： 就是等到这个点以后， 大家可以一起开始做什么事情。 而闭锁就是结束而已； 还有就是CyclicBarrier 是可以重用的， 而CountDownLatch 则是不能重用。 
 
 
+```
+		int N=4;
+		CyclicBarrier barrier = new CyclicBarrier(N);
+		
+		for(int i=0; i<N; i++){
+			new Writer(barrier).start();
+		}
+```
+
+
+```
+	static class Writer extends Thread{
+		private CyclicBarrier cyclicBarrier;
+		public Writer(CyclicBarrier cyclicBarrier){
+			this.cyclicBarrier = cyclicBarrier;
+		}
+		
+		public void run(){
+			System.out.println(Thread.currentThread().getName() + " write data");
+			
+			try {
+				Thread.sleep(2000);
+				System.out.println(Thread.currentThread().getName() + "write down, wait for else");
+				cyclicBarrier.await();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (BrokenBarrierException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+```
+
+## 关于显示锁
+
+ReentrantLock 这个
+
+--相对于synchronized 有些危险， 因为你如果没有release 会有问题。 
+
+## 线程池
+感觉没有什么. 
+
+## java 内存模型
+
+- 重排序： 就是说编译器根据自己的情况做一些优化。 底层实现看到了就收集一些吧。 
+- happen before 规则： JMM可以通过happens-before关系向程序员提供跨线程的内存可见性保证（如果A线程的写操作a与B线程的读操作b之间存在happens-before关系，尽管a操作和b操作在不同的线程中执行，但JMM向程序员保证a操作将对b操作可见）。
+
+JVM定义的Happens-Before原则是一组偏序关系：对于两个操作A和B，这两个操作可以在不同的线程中执行。如果A Happens-Before B，那么可以保证，当A操作执行完后，A操作的执行结果对B操作是可见的。
+
+但是说A 不一定在B之前执行， 怎么理解 ？？？
+
+
+## 其他的ms 问题
+
+
+- 什么叫fail-fast 。 就是如果进行操作， 直接抛出ConcurrentModificationException，
+
+- 自旋锁， 可重入：
+可重入是说当前线程获得锁之后呢， 还可以继续进入这个锁， 当然需要计数， release 的时候减少。 synchronize 和 reentonlock 的都是可以重入的。 	不可重入呢， 就是不能再进去了。 自旋锁是说我去拿一个锁， 没有拿到， 然后呢， while 不断循环去拿这个锁。 信号量也是， ——》 这两个都是获得锁的方式。 java code 看不到因为是底层处理的。 但是自旋锁呢是在执行的 running 队列里面的， cpu 有了时间片就可以执行这个。   而Spin lock则不然，它属于busy-waiting类型的锁，如果线程A是使用pthread_spin_lock操作去请求锁，那么线程A就会一直在 Core0上进行忙等待并不停的进行锁请求，直到得到这个锁为止。- 多核cpu
+而信号量则是放在waiting 队列里的。 这个要等待。 
+
+
+- 线程的几种状态：New（新建状态），Runnable（就绪状态），Running（运行状态），Blocked（阻塞状态），Dead（死亡状态）。
+- wait/notify/notifyAll方法的作用是实现线程间的协作，那为什么这三个方法不是位于Thread类中，而是位于Object类中？位于Object中，也就相当于所有类都包含这三个方法（因为Java中所有的类都继承自Object类）。要回答这个问题，还是得回过来看wait方法的实现原理，大家需要明白的是，wait等待的到底是什么东西？如果对上面内容理解的比较好的话，我相信大家应该很容易知道wait等待其实是对象monitor，由于Java中的每一个对象都有一个内置的monitor对象，自然所有的类都理应有wait/notify方法。refer to http://www.cnblogs.com/paddix/p/5381958.html
+
+
+## 小结以及下一步
+
+对多线程的基本场景和基本方式进行了一些了解。对整体的理解有了一些深入。 
+
+为什么多线程会有安全问题， synchronized， lock， volatile的一些用法。 常用工具类的用法：futuretask, countdownlock, cylicbarrier, setaphone, 
+对线程池着墨不多。 
+
+后期如有时间， 应该继续
+- AQS 源码
+- lock 还需要继续深入以及实例。 
+
+Question
+- 偏向锁： synchronized 好像1.7 加了一些优化。 
+- wait sleep
 
 注意
 - 自己没有对cpu 指令层进行更多的学习， 觉得暂时必要性不大， 而且耗时较长。 以后有兴趣单独学习。 
 
 参考
 1. java 并发编程实战
+2. 并发专题 https://www.jianshu.com/p/27860941a77b
+3. 
 2. 镇楼
 ![总图](C:/developer/blog/zyhnjust.github.io/source/_posts/java%E5%B9%B6%E5%8F%91%E6%A6%82%E8%BF%B0/2615789-0e32f116bae6062e.png)
 ![总图](2615789-0e32f116bae6062e.png)
