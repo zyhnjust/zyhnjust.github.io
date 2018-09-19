@@ -167,8 +167,7 @@ Full GC is cleaning the entire Heap – both Young and Tenured spaces.
 
 注意， 很多时候major gc 是由ygc trigger的。 
 
-# JVM 常用启动参数
-# JVM 配置和调优参数有哪些， 分别什么作用。 
+# JVM 常用启动参数， # JVM 配置和调优参数有哪些， 分别什么作用。 
     -Xmn，-Xms等具体参数设置
 
 - Xms设置堆的最小空间大小。
@@ -213,13 +212,16 @@ public class StringInternTest {
 所以在jdk1.7中执行上面代码，str1返回true是引用他们指向的都是str1对象（堆中）（池中不存在，返回原引用），而str2返回false是因为池中已经存在"java"了（关键词），所以返回的池的对象，因此不相等。
 
 # 例子 经验
-## 曾经CMS outof memory 因为object 数目过多， 然后
+## 曾经CMS outof memory issue
+因为object 数目过多
+
 MAT 来dump 出来， 分析哪个object， 调整参数
 代码有的copy 没有必要。 把这部分去掉。 少copy
 
 http://icyfenix.iteye.com/blog/715301
 
-## “地球人都知道，Java有个东西叫垃圾收集器，它让创建的对象不需要像c/cpp那样delete、free掉，你能不能谈谈，GC是在什么时候，对什么东西，做了什么事情？”
+## 垃圾收集器的问题
+“地球人都知道，Java有个东西叫垃圾收集器，它让创建的对象不需要像c/cpp那样delete、free掉，你能不能谈谈，GC是在什么时候，对什么东西，做了什么事情？”
     3.能说出新生代、老年代结构，能提出minor gc/full gc 
     - 比如eden 满了 minor gc。 
     - 升到老年代的对象大于剩余空间了 full gc； 
@@ -230,7 +232,6 @@ http://icyfenix.iteye.com/blog/715301
 
 ## “做什么事情”
     不同代做的不同。      3.能说出诸如新生代做的是复制清理、from survivor、to survivor是干啥用的、老年代做的是标记清理、标记清理后碎片要不要整理、复制清理和标记清理有有什么优劣势等。 
-
 
 # 类加载
 类的加载指的是将类的.class文件中的二进制数据读入内存中,将其放在运行时数据区域的方法去内,然后在堆中创建java.lang.Class对象,用来封装类在方法区的数据结构.只有java虚拟机才会创建class对象,并且是一一对应关系.这样才能通过反射找到相应的类信息.
