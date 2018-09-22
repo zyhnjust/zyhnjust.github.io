@@ -320,6 +320,51 @@ Cglib是一个强大的高性能的代码生成包，它可以在运行期扩展
 
 Cglib包的底层是通过使用一个小而快的字节码处理框架ASM，来转换字节码并生成新的类。不鼓励直接使用ASM，因为它需要你对JVM内部结构包括class文件的格式和指令集都很熟悉。
 
+# 如何实现一个HashTable， 设计如何考虑hash 冲突， 如何优化
+
+## hashtable 区别
+hashtable 不允许null。 map云顺序
+- map 线程不安全
+- 4、Hashtable继承自Dictionary，HashMap继承自AbstractMap。
+
+## 如何构造
+
+因为是散列， 其实就是如何构造这个关系。 
+- hash function：
+    哈希表是一种通过 keys 对 value 的映射，来实现数据访问的数据结构，而这种映射一般分为两个阶段：
+    1）将关键字 key 作为自变量， 通过一定的函数关系，计算出的因变量作为 value 的索引（index） 2）如果该索引指向的空间上没有存储数据，则将 value 插入，否则，称为产生了一个冲突（collision），需要对冲突进行处理，之后找到新的没有数据的空间，再将 value 插入
+    // 这种函数关系是通过哈希函数（hash function）来实现的, 即将任意长度的数据映射为较短的固定长度的数据，该数据（也就是 index）也被称为哈希值（hash values / hash codes）
+- collision resolution：
+    冲突处理，当key的集合很大的时候，根据生日问题（birthday problem）原理，哈希冲突实际上是不可避免的，所以几乎所有的哈希表都会有对于冲突的解决策略，常见的方法有三种;
+    1. 开放寻址法：
+    - 还是关于继续加么
+    - 
+    2. 再散列。 就是继续做一次散列。 好处不容易聚焦， 增加了计算时间 
+     
+     
+    3 链地址法， 拉链发。 因为是链表么， 所以继续再加一个连。 
+    优点：
+    拉链法处理冲突简单，且无堆积现象，即非同义词决不会发生冲突，因此平均查找长度较短；
+    在用拉链法构造的散列表中，删除结点的操作易于实现
+    缺点：
+    在对链表进行存储空间分配的时候，会降低整个程序的运行速率
+
+    4. 建立一个公共溢出区。 
+        
+    可以参考。 https://my.oschina.net/NGINX08/blog/111655
+
+    
+## todo
+1. http://wiki.jikexueyuan.com/project/java-collection/hashmap.html 几种集合源码导读
+2. https://www.jianshu.com/p/526970086e4e
+3. hash 冲突 http://www.cnblogs.com/zhousysu/p/5483932.html
+4. hashmap http://yikun.github.io/2015/04/01/Java-HashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0/
+5. hashmap 性能 http://www.importnew.com/14417.html
+6. 
+
+
+
+https://www.jianshu.com/p/7e7f52a49ffc
 
 
 # TODO
