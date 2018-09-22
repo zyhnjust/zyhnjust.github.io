@@ -5,6 +5,10 @@ date: 2018-09-19 13:55:24
 tags:
 - java
 - jvm
+categories: 
+- 面试
+- java
+- JVM
 ---
 
 一些JVM 相关的问题和回答。 

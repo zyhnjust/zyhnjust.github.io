@@ -3,13 +3,13 @@ title: ms_meituan
 date: 2018-09-09 14:24:18
 tags:
 - redis
-- ms
+- 面试
 categories: 
 - 面试
-- 题目
+- redis
 ---
 
-几道面试题目
+几道面试题目 - redis
 
 <!-- more -->
 

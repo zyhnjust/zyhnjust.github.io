@@ -3,6 +3,10 @@ title: java_base
 date: 2018-09-21 15:33:27
 tags:
 - java
+categories: 
+- 面试
+- java
+- basic
 ---
 
 介绍几个java 基础的问题

@@ -5,6 +5,8 @@ tags:
 - microservice
 - vertx
 categories: 
+- 面试
+- 架构
 - 微服务
 ---
 
