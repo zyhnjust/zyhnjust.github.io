@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>二段式，三段式和Paxos | Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="问题的提出问题的提出： 分布式系统， 为了保证数据高可用， 我们会将数据保留多个副本。 这些副本会在不同的物理机器上。我们需要保证这些不同物理机器上的副本是一致的。">
+<meta name="keywords" content="分布式事务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二段式，三段式和Paxos">
+<meta property="og:url" content="http://yoursite.com/2018/09/29/二段式，三段式和Paxos/index.html">
+<meta property="og:site_name" content="Tech">
+<meta property="og:description" content="问题的提出问题的提出： 分布式系统， 为了保证数据高可用， 我们会将数据保留多个副本。 这些副本会在不同的物理机器上。我们需要保证这些不同物理机器上的副本是一致的。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/二段式，三段式和Paxos/123.bmp">
+<meta property="og:image" content="http://yoursite.com/2018/09/29/二段式，三段式和Paxos/123.bmp">
+<meta property="og:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/二段式，三段式和Paxos/234.bmp">
+<meta property="og:image" content="http://yoursite.com/2018/09/29/二段式，三段式和Paxos/234.bmp">
+<meta property="og:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/二段式，三段式和Paxos/345.bmp">
+<meta property="og:image" content="http://yoursite.com/2018/09/29/二段式，三段式和Paxos/345.bmp">
+<meta property="og:updated_time" content="2018-10-06T12:33:24.578Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="二段式，三段式和Paxos">
+<meta name="twitter:description" content="问题的提出问题的提出： 分布式系统， 为了保证数据高可用， 我们会将数据保留多个副本。 这些副本会在不同的物理机器上。我们需要保证这些不同物理机器上的副本是一致的。">
+<meta name="twitter:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/二段式，三段式和Paxos/123.bmp">
+  
+    <link rel="alternate" href="/atom.xml" title="Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Tech</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-二段式，三段式和Paxos" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/29/二段式，三段式和Paxos/" class="article-date">
+  <time datetime="2018-09-29T09:04:01.000Z" itemprop="datePublished">2018-09-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/arch/">arch</a>►<a class="article-category-link" href="/categories/arch/分布式/">分布式</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      二段式，三段式和Paxos
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+	    
+<div id="toc">
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问题的提出"><span class="toc-text">问题的提出</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二段式"><span class="toc-text">二段式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#存在的问题"><span class="toc-text">存在的问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三段式"><span class="toc-text">三段式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#区别"><span class="toc-text">区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-text">问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#paxos"><span class="toc-text">paxos</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#refer"><span class="toc-text">refer</span></a></li></ol>
+</div>
+
+        <h1 id="问题的提出"><a href="#问题的提出" class="headerlink" title="问题的提出"></a>问题的提出</h1><p>问题的提出： 分布式系统， 为了保证数据高可用， 我们会将数据保留多个副本。 这些副本会在不同的物理机器上。<br>我们需要保证这些不同物理机器上的副本是一致的。 </p>
+<a id="more"></a>
+<p>为了保证这种一致性， 有机械经典的协议和算法。 二阶段提交， 三阶段提交， Paxos 算法。 </p>
+<ul>
+<li>分布式事务</li>
+</ul>
+<p>以上问题就提出了分布式事务的问题。 每台物理机器自己是可以做到ACID的。 但是相互独立的节点无法准确知道其他节点的事务执行。 所以理论上讲， 两台机器理论上无法一致。<br>如果要保存一致， 就意味着， 要么全部执行， 要么全部不执行。<br>为了解决这个问题， 通常需要引入一个协调者， 来统一调度所有分布式节点的执行。 </p>
+<h1 id="二段式"><a href="#二段式" class="headerlink" title="二段式"></a>二段式</h1><ul>
+<li>2PC Two phaseCommit<br>参与者将操作成败通知协调者，再由协调者根据所有参与者的反馈情报决定各参与者是否要提交操作还是中止操作。</li>
+</ul>
+<p>第一阶段</p>
+<ul>
+<li>1）协调者节点向所有参与者节点询问是否可以执行提交操作(vote)，并开始等待各参与者节点的响应。</li>
+<li>2）参与者节点执行询问发起为止的所有事务操作，并将Undo信息和Redo信息写入日志。（注意：若成功这里其实每个参与者已经执行了事务操作）</li>
+<li>3）各参与者节点响应协调者节点发起的询问。如果参与者节点的事务操作实际执行成功，则它返回一个”同意”消息；如果参与者节点的事务操作实际执行失败，则它返回一个”中止”消息。</li>
+</ul>
+<p>第二阶段 提交阶段<br>如果协调者收到了参与者的失败消息或者超时，直接给每个参与者发送回滚(Rollback)消息；否则，发送提交(Commit)消息；参与者根据协调者的指令执行提交或者回滚操作，释放所有事务处理过程中使用的锁资源。(注意:必须在最后阶段释放锁资源)<br>分成功和失败两种情况讨论</p>
+<p><img src="C:/developer/blog/zyhnjust.github.io/source/_posts/二段式，三段式和Paxos/123.bmp" alt="image"><br><img src="123.bmp" alt="image"></p>
+<p><img src="C:/developer/blog/zyhnjust.github.io/source/_posts/二段式，三段式和Paxos/234.bmp" alt="image"><br><img src="234.bmp" alt="image"></p>
+<h2 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h2><p>关键是存在的问题 </p>
+<ol>
+<li>同步阻塞问题。</li>
+</ol>
+<p>执行过程中，所有参与节点都是事务阻塞型的。当参与者占有公共资源时，其他第三方节点访问公共资源不得不处于阻塞状态。</p>
+<p>-》这个肯定的。 </p>
+<ol start="2">
+<li>单点故障。由于协调者的重要性，一旦协调者发生故障。参与者会一直阻塞下去。尤其在第二阶段，协调者发生故障，那么所有的参与者还都处于锁定事务资源的状态中，而无法继续完成事务操作。（如果是协调者挂掉，可以重新选举一个协调者，但是无法解决因为协调者宕机导致的参与者处于阻塞状态的问题）<br>-&gt; 基本清楚， 就是如果协调者故障， 别的还在锁定状态。 </li>
+</ol>
+<p>单点问题：</p>
+<ul>
+<li>==&gt;协调者占据主导地位</li>
+<li>==&gt;一旦协调者出出现问题，那么整个事务则无法完成，尤其是在阶段二中出现问题，各个参与者所锁定的资源将无法释放。导致其他业务不能操作</li>
+</ul>
+<ol start="3">
+<li>数据不一致。在二阶段提交的阶段二中，当协调者向参与者发送commit请求之后，发生了局部网络异常或者在发送commit请求过程中协调者发生了故障，这回导致只有一部分参与者接受到了commit请求。而在这部分参与者接到commit请求之后就会执行commit操作。但是其他部分未接到commit请求的机器则无法执行事务提交。于是整个分布式系统便出现了数据部一致性的现象。<br>–》 这个问题清楚， 但是如何解决， 3PC 也解决不了吧</li>
+</ol>
+<p>脑裂导致数据不一致：<br>        ==&gt;如果分布式节点出现网络分区，某些参与者未收到commit提交命令。则出现部分参与者完成数据提交。未收到commit的命令的参与者则无法进行事务提交。整个分布式系统便出现了数据不一致性现象。</p>
+<p>附录的一篇文件对具体的场景进行了分析。 就是说什么情况下数据不一致。 </p>
+<ul>
+<li>基本的结论是说 2PC协议中，如果出现协调者和参与者都挂了的情况，有可能导致数据不一致。</li>
+</ul>
+<h1 id="三段式"><a href="#三段式" class="headerlink" title="三段式"></a>三段式</h1><p>两点改动</p>
+<ol>
+<li>明显的， 加了一步， 就是pre commit， 保证在提交之前状态一致。 这个解决了什么问题。 前面并没有提到 </li>
+</ol>
+<ul>
+<li>1）在2PC， prepare 每个节点都回答yes， 并做了操作， 而且把undo redo 放在了事务日志里面， 只是没有commit。 这里一分为二，  第一阶段说可以。 第二阶段再做操作。 </li>
+</ul>
+<ol start="2">
+<li>引入了超时机制， 同时在协调者， 参与者引入了超时机制。 </li>
+</ol>
+<ul>
+<li>其实在第一个里面， 协调者也有超时， 但是这里呢对于参与者也加入了超时机制。 </li>
+</ul>
+<p><img src="C:/developer/blog/zyhnjust.github.io/source/_posts/二段式，三段式和Paxos/345.bmp" alt="image"><br><img src="345.bmp" alt="image"></p>
+<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><ol>
+<li>相对于2PC，3PC主要解决的单点故障问题，并减少阻塞，因为一旦参与者无法及时收到来自协调者的信息之后，他会默认执行commit。而不会一直持有事务资源并处于阻塞状态。<br>-》因为到了第三阶段以前， 第一阶段必然执行完了， 也就是说所有都回答yes， 了， 所以 第二阶段大家都做完的可能性很大。 </li>
+<li>3PC 显然不会阻塞了， 因为有timeout了。 就这个区别。<br>3PC和2PC上超时判断的区别<br>2PC上只有协调者有超时判断<br>比如：在第二阶段事务提交时，协调者等待参与者反馈超时，会中断事务，因此被认为“保守”<br>3PC上参与者和协调者都有超时的判断<br>比如，对于参与者来说：在第三阶段doCommit时，参与者等待协调者发出commit或者abort响应超时，就执行了commit(概率事件，因为preCommit收到了Ack，认为大概率能够commit，因此解决了2PC“保守”的问题)</li>
+</ol>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>当然 这种机制也会导致数据一致性问题，因为，由于网络原因，协调者发送的abort响应没有及时被参与者接收到，那么参与者在等待超时之后执行了commit操作。这样就和其他接到abort命令并执行回滚的参与者之间存在数据不一致的情况。</p>
+<h1 id="paxos"><a href="#paxos" class="headerlink" title="paxos"></a>paxos</h1><ul>
+<li>是什么 以及如何解决的问题</li>
+</ul>
+<p>简单理解如何解决了上面的问题呢。 </p>
+<p>它引入了一个序列的概念， 就是我这个协调者发出去的时候是带一个序号的， 这样就能够在出问题的时候恢复可以知道自己是接收还是不接受了。 </p>
+<ul>
+<li>另外呢， 它还改变了所有人通过再成功的概念， 大多数人即可。 如果分治成了两部分， 也是总数的多个。 也是可以处理的</li>
+</ul>
+<p>摘抄如下：</p>
+<p>第一 – 除了三段提交我们还有什么更好的方法吗？唯一的问题是网络分隔，是吧？为了开始，让我们假设网络分隔是唯一的问题(事实上这不是唯一的问题，等一下我们会提到)。网络分隔的问题是否值得去解决？今天，云计算和英特网范围的服务，不同的服务器之间可能跨洋跨大陆，我们需要一个分区容忍性算法。</p>
+<p>第二点网络分隔不是唯一的问题。 当我们着手处理阶段永久失败的情况，最常见的情况是服务器死机，然后从死掉的地方重新恢复。这种失败-恢复模型也可以描述一个节点回应消息无时间上限的异步网络模型，因为你不能假设一个节点死掉了 – 它们可能只是慢一点或者网络慢一点。在这个模型，你不能设置超时。</p>
+<p>三段提交是失败-停止，但不是失败-恢复。不幸的是真实的需求往往要求失败-恢复，因此我们需要更通用的解决方案。这就是Paxos协议诞生的原因</p>
+<p>Paxos – 实现原理<br>在Paxos中，最基本的步骤很像二段提交：</p>
+<p>选择一个节点作为提议者<br>提议者选择一个值，然后发送给所有接受者。接受者可用回复拒绝或接受<br>一旦大多数节点接受提议，共识就达成了，协调者向所有接受者发送提交命令</p>
+<p>和二段提交主要的不同是，不像二段提交需要所有节点同意，这样只需要大多数节点同意即可。这是个有趣的想法。这保证了在一个回合内，如果大多数节点同意了一个值，而后的任意节点尝试提议一个值的时候都会学习大多数节点同意的那个值。这也意味着 Paxos 不会阻塞，即使一小半节点响应失败。<br>当然协调者本身也可能失败。为了处理这个问题， Paxos 不会只指定一个协调者那么简单。它允许任何节点都可以成为协调者。两个协调者可能提议不同的值，那么怎么协调达成共识呢？为了解决共识达成一致的问题 Paxos 引入了两个机制：</p>
+<p>分配一个序列号给协调者。 不同协调者的序列号不同，这样可以防止旧的协调者 (例如从失败中恢复过来的协调者) 对达成的共识有异议。<br>限定协调者的选值。一旦共识达成，Paxos 强制让后来的协调者选择已有的值，保证共识延续。这个可以通过让参与者发送自身同意的最新的值以及协调者的序列号来获得。新的协调者可以选择选择参与者返回的其中一个值，当没有任何参与者返回值的时候，就选择自己的值。</p>
+<p>协议的步骤：</p>
+<p>1) 准备阶段：</p>
+<p>一个节点选择成为一个协调者，然后选择了一个序列号 x 和一个值 v 来建立一项提议 P1(x, v)。 它将这个提议发送给所有参与者，然后等待大多数参与者的响应。<br>参与者接收到了提议 P1(x, v1) ，然后做如下事情：<br>如果收到的是第一个提议，就回复 ‘agree’ – 它承诺会拒绝后来序列号 &lt; x的所有请求<br>如果已经同意过某个提议：<br>将 x 和它同意过的最大的序列号的提议 P2(y, v2)对比<br>如果 x &lt; y, 回复 ‘reject’ 和 y<br>如果 x &gt; y, 回复 ‘agree’ 和 P2(y, v2)</p>
+<p>2) 接受阶段</p>
+<p>如果大多数参与者失败或者回复拒绝，协调者会抛弃提案然后重新开始<br>如果大多数参与者回复“同意”， 协调者也会接收到它们收到的提议的值。协调者拿到这些值任意一个 (如果还没有值被接受就用它自己的值) 然后发送一个“请接受我”的请求，这个请求会带上一个序列号和一个要提议的值。<br>当参与者接收到一个“接受请求”的消息，当满足下面的两个条件的时候，它会发送一个‘接受’ 消息， 否则会发送一个拒绝消息：<br>值和之前接受的任意值相同<br>序列号是参与者所接受所有值的最大值<br>如果协调者没有得到大多数参与者 ‘接受’ 的消息，它的提议将会被摒弃，重新开始一次事务。然而如果协调者没有得到大多数参与者的“接受”，事务可以终止了。为了优化，协调者可能发送 ‘提交’ 命令给其它节点</p>
+<p>Paxos 处理失败<br>如果授权时Paxos只有一个协调者， 用授权来代替投票，所有节点都必须投票吗？你猜对了 – 二段提交就是这样的。 二段提交是Paxos的某个特殊情况。</p>
+<p>如你所见， Paxos  比二段提交有更高的失败容忍性：</p>
+<p>协调者失败 – 另外一个协调者可以代替它，提出自己的提议。<br>原来的协调者恢复 – 两个协调者可以同时存在，多亏了这个规则：只同意最大的序列号以及只能提交前一个同意的值</p>
+<p>Paxos也比三段提交更具有容错性。特别地，Paxos的分区容忍性不同于三段提交。在三段提交，如果两个隔离的分区同意了一个值，当分区合并的时候，就会出现违反一致性的情况。在Paxos，这种情况是不会出现的，因为有大多数选票机制。除非一个分区有大多数参与者同意，否则不会达成一致。如果一个分区有大多数参与者同意能够达成一致，这个值会被其它分区采取。</p>
+<p>Paxos的一个问题是两个协调者，不能互相观察，当有分区隔离的时候，可能会尝试提出一个比前一个提议更高的序列号的提议。这会导致Paxos事务永远不会休止（成为活锁）。尽管两个协调者期望观察另外一个，并且其中一个需要退出。</p>
+<p>这是个安全和可用性之间的平衡。Paxos是一个安全的算法 – 一旦共识达成，被同意的值不会改变。然而 Paxos不保证可用性 – 在某些很少的情况下它会终止。事实上一个异步的一致性算法不能同时保证安全和可用性，这被称为 FLP 不可能结果.</p>
+<h1 id="refer"><a href="#refer" class="headerlink" title="refer"></a>refer</h1><ol>
+<li><a href="https://www.quora.com/Distributed-Systems/In-distributed-systems-what-is-a-simple-explanation-of-the-Paxos-algorithm" target="_blank" rel="noopener">https://www.quora.com/Distributed-Systems/In-distributed-systems-what-is-a-simple-explanation-of-the-Paxos-algorithm</a></li>
+<li><a href="http://www.hollischuang.com/archives/681" target="_blank" rel="noopener">http://www.hollischuang.com/archives/681</a></li>
+<li><a href="http://www.hollischuang.com/archives/1580" target="_blank" rel="noopener">http://www.hollischuang.com/archives/1580</a></li>
+<li></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/09/29/二段式，三段式和Paxos/" data-id="cjmxfc3ek000xd8tv18ceww2e" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式事务/">分布式事务</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/09/29/Http-time-wait状态/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Http_time_wait状态
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/29/kubnetes-notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">kubnetes_notes</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/arch/">arch</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/arch/分布式/">分布式</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/network/">network</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/">面试</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/db/">db</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/">java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/IO/">IO</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/JVM/">JVM</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/basic/">basic</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/并发/">并发</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/大数据/">大数据</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/大数据/redis/">redis</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/架构/">架构</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/架构/微服务/">微服务</a></li></ul></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/">AI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IO/">IO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/arch/">arch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/db/">db</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/microservice/">microservice</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vertx/">vertx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式事务/">分布式事务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/arch/" style="font-size: 10px;">arch</a> <a href="/tags/db/" style="font-size: 10px;">db</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/jvm/" style="font-size: 10px;">jvm</a> <a href="/tags/microservice/" style="font-size: 10px;">microservice</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/vertx/" style="font-size: 10px;">vertx</a> <a href="/tags/分布式事务/" style="font-size: 10px;">分布式事务</a> <a href="/tags/并发/" style="font-size: 10px;">并发</a> <a href="/tags/架构/" style="font-size: 10px;">架构</a> <a href="/tags/面试/" style="font-size: 20px;">面试</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/10/05/关于机器学习流程以及几个度量的理解/">关于机器学习流程以及几个度量的理解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/Http-time-wait状态/">Http_time_wait状态</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/二段式，三段式和Paxos/">二段式，三段式和Paxos</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/kubnetes-notes/">kubnetes_notes</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/28/分布式/">分布式</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 hzhang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+<!-- 站内搜索-Swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script>
+  </div>
+</body>
+</html>

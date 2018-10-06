@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>ms_meituan | Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="几道面试题目 - redis">
+<meta name="keywords" content="面试,redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ms_meituan">
+<meta property="og:url" content="http://yoursite.com/2018/09/09/ms-redis/index.html">
+<meta property="og:site_name" content="Tech">
+<meta property="og:description" content="几道面试题目 - redis">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-10-06T09:39:23.760Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ms_meituan">
+<meta name="twitter:description" content="几道面试题目 - redis">
+  
+    <link rel="alternate" href="/atom.xml" title="Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Tech</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-ms-redis" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/09/ms-redis/" class="article-date">
+  <time datetime="2018-09-09T06:24:18.000Z" itemprop="datePublished">2018-09-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/面试/">面试</a>►<a class="article-category-link" href="/categories/面试/大数据/">大数据</a>►<a class="article-category-link" href="/categories/面试/大数据/redis/">redis</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ms_meituan
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+	    
+<div id="toc">
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis"><span class="toc-text">Redis</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-redis-介绍，-了解redis-集群么"><span class="toc-text">1. redis 介绍， 了解redis 集群么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Redis的持久化？有哪些方式，原理是什么？"><span class="toc-text">1. Redis的持久化？有哪些方式，原理是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis-memorycache"><span class="toc-text">redis memorycache</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式缓存，-一致性Hash"><span class="toc-text">分布式缓存， 一致性Hash</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#架构：-一致性Hash"><span class="toc-text">架构： 一致性Hash</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如何解决缓存的几个问题-缓存穿透，-缓存并发-缓存失效。"><span class="toc-text">如何解决缓存的几个问题 缓存穿透， 缓存并发 缓存失效。</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#列举一个常用的redis-客户端的并发模型-still-todo"><span class="toc-text">列举一个常用的redis 客户端的并发模型  - still todo</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zk-功能-如何选举"><span class="toc-text">zk 功能  如何选举</span></a></li></ol>
+</div>
+
+        <p>几道面试题目 - redis</p>
+<a id="more"></a>
+<h1 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h1><h2 id="1-redis-介绍，-了解redis-集群么"><a href="#1-redis-介绍，-了解redis-集群么" class="headerlink" title="1. redis 介绍， 了解redis 集群么"></a>1. redis 介绍， 了解redis 集群么</h2><p>A: redis是个开源的高性能的key value 的存储系统，基本特点</p>
+<ul>
+<li><ul>
+<li style="list-style: none"><input type="checkbox"> 1） 知此恨数据的持久化。 可以存到磁盘。 怎么存？ TODO</li>
+</ul>
+</li>
+<li>2） 除了key value 还有其他的数据结构， list set， topic 订阅的模式。 </li>
+<li>3） 支持数据备份， master slave的数据备份 </li>
+</ul>
+<p>优势 </p>
+<ul>
+<li>1） 性能奥， 据说一秒 10万次左右。 写 8万次。 </li>
+<li>2 数据类型丰富</li>
+<li>3 原子操作， 单线程的。 </li>
+<li>4 丰富的特性， 通知， key 过期等。 </li>
+</ul>
+<p>内存调优： </p>
+<ul>
+<li>1） 不要开vm 选项。就是存储超过物理内存的再内存和磁盘幻如幻出的策略。 内存管理成本高。 </li>
+<li>2） 可以设置redis。conf  maxmemory 这样一定内存后就可以拒绝了。 </li>
+</ul>
+<p>内存淘汰策略：</p>
+<ol>
+<li>noeviction：内存达到阈值， 所有申请内存的都会报错。 </li>
+<li>allkeys-lru ， 优先移除最近没有使用的key</li>
+<li>volatile-lru： 设置了过期时间的建空间 优先一处最近未使用的key</li>
+<li>allkeys- random： 主键空间， 随机移除每个key</li>
+<li>volatile-random： 再设置了过期实践的建空间中， 随机移除每个key。 </li>
+<li>volatile-ttl 具有更早过期时间的先移除。 </li>
+</ol>
+<h2 id="1-Redis的持久化？有哪些方式，原理是什么？"><a href="#1-Redis的持久化？有哪些方式，原理是什么？" class="headerlink" title="1. Redis的持久化？有哪些方式，原理是什么？"></a>1. Redis的持久化？有哪些方式，原理是什么？</h2><p>持久化</p>
+<ul>
+<li>1） RDB 快照就是默认的持久化方式。 基本思路是说用快照的方式写到二进制文件中， 默认 dump.rdb。- 可以redis 再多少key修改自动快照， 也可以命令行进行snapshotting。 </li>
+<li>2） 基本的过程如下。 for 一个紫禁城。 父进程继续处理client 请求， 子进程把内存写入临时文件。由于os 写时复制机制 copy on write， 但是当如今成处理写的额时候 os 会给父进程要修改的页面创建一个副本，而不是共享的页面。 所以子进程的地址空间内的数据是for哪个时刻的数据的一个快照。<br>– 这个的不足就是因为两次快照有时间间隔， 那么如果数据库有了问题， 中间出现的改变就丢失了。 </li>
+<li>AOF 做持久化的时候呢， redis 将收到的每个写命令都通过write函数追加到文件中， 默认是 appendonly.aof， 重启的时候， 重新执行文件中的些命令再内存中重建整个数据库的内容。 当然os 还是现在内核中缓存这个修改， 而不是立即卸载磁盘上。 所以还是有可能丢失部分数据。 有几种情形是可以配置的： </li>
+<li><ul>
+<li>append only yes  启动持久化方式</li>
+</ul>
+</li>
+<li><ul>
+<li>append fsync always 收到就立即强制写入， 最慢的选择， 不建议使用。 </li>
+</ul>
+</li>
+<li><ul>
+<li>appendsync every sec 这个是比较推荐的</li>
+</ul>
+</li>
+<li><ul>
+<li>appendsync no // 完全依赖os的处理， 这个持久化的时间就没有保证了， 但是性能是最好的。 </li>
+</ul>
+</li>
+<li>aof 带来另外的问题。就是文件太大， 比如调用incr test 100次， 文件要保存100次， 其实99次都是多余的。 所以为了压缩呢 redis 有 bgrewirteoof 命令。 收到之后呢， 将使用快照类似的方式将内存的数据以命令的方式保存到临时文件， 最后替换原来的文件。 – 这个文件比原来的命令就小了很多。 </li>
+<li>bgrewrite的执行过程</li>
+<li><ul>
+<li>redis 调用fork， 父子两个进程。 子进程根据内存的数据库快照， 往临时文件写入重建数据库状态的命令。 父进程继续处理client 请求， 除了把命令写入原来的aof， 还有缓存起来。 - </li>
+</ul>
+</li>
+<li><ul>
+<li>子进程把快照内容写到临时文件中后， 子进程发信号通知父进程。 然后父进程把缓存的写命令也写入到临时文件。 这个时候父进程就可以用临时文件替换老的aof 文件， 并且重命名， 后面的命令就可以在新的aof 来追加。 </li>
+</ul>
+</li>
+<li>两种方式各有利弊。 快照对性能影响小， 崩溃了数据丢失较大。 aof 数据安全性较高， 性能影响较大。 </li>
+</ul>
+<p>线程体系</p>
+<ul>
+<li>基于单线程模型。 所以多个客户端对一个键进行写操作不会有并发问题。</li>
+<li>除了客户请求之后有一些耗时操作， 如持久化RDB文件， 持久化AOF文件。 </li>
+</ul>
+<p>主从复制</p>
+<ul>
+<li style="list-style: none"><input type="checkbox"> 集群可能有很多的topic， 部署也有一些。  </li>
+<li><a href="https://www.zhihu.com/question/21419897" target="_blank" rel="noopener">https://www.zhihu.com/question/21419897</a></li>
+<li>目前我们只是用了三个节点以及三个哨兵的这种安装模式</li>
+<li>我们用了什么呢</li>
+<li>redis 做缓存， cmc </li>
+<li>redis 做topic 订阅。 </li>
+<li>redis 做抢占</li>
+</ul>
+<p>参考： <a href="https://www.jianshu.com/p/d9cf0c2f23bb" target="_blank" rel="noopener">https://www.jianshu.com/p/d9cf0c2f23bb</a></p>
+<h2 id="redis-memorycache"><a href="#redis-memorycache" class="headerlink" title="redis memorycache"></a>redis memorycache</h2><p>Redis最适合所有数据in-momory的场景，虽然Redis也提供持久化功能，但实际更多的是一个disk-backed的功能，跟传统意义上的持久化有比较大的差别，那么可能大家就会有疑问，似乎Redis更像一个加强版的Memcached，那么何时使用Memcached,何时使用Redis呢?</p>
+<p>如果简单地比较Redis与Memcached的区别，大多数都会得到以下观点：</p>
+<ol>
+<li>Redis不仅仅支持简单的k/v类型的数据，同时还提供list，set，zset，hash等数据结构的存储。</li>
+<li>Redis支持数据的备份，即master-slave模式的数据备份。</li>
+<li>Redis支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用</li>
+<li>redis相比memcached有哪些优势？ 　　</li>
+</ol>
+<ul>
+<li>　　(1) memcached所有的值均是简单的字符串，redis作为其替代者，支持更为丰富的数据类型</li>
+<li>　　(2) redis的速度比memcached快很多 </li>
+<li>　　(3) redis可以持久化其数据</li>
+</ul>
+<ol start="5">
+<li>Memcache与Redis的区别都有哪些？    </li>
+</ol>
+<ul>
+<li>存储方式 Memecache把数据全部存在内存之中，断电后会挂掉，数据不能超过内存大小。 Redis有部份存在硬盘上，这样能保证数据的持久性。</li>
+<li>数据支持类型 Memcache对数据类型支持相对简单。 Redis有复杂的数据类型。</li>
+<li>使用底层模型不同 它们之间底层实现方式 以及与客户端之间通信的应用协议不一样。 Redis直接自己构建了VM 机制 ，因为一般的系统调用系统函数的话，会浪费一定的时间去移动和请求。</li>
+</ul>
+<h1 id="分布式缓存，-一致性Hash"><a href="#分布式缓存，-一致性Hash" class="headerlink" title="分布式缓存， 一致性Hash"></a>分布式缓存， 一致性Hash</h1><ul>
+<li>可以用redis</li>
+<li>数据结构(Data Structure)需求越来越多, 但memcache中没有, 影响开发效率</li>
+<li>支持5种数据结构： 支持strings, hashes, lists, sets, sorted sets</li>
+<li>Redis使用单线程实现，Memcache等使用多线程实现，因此我们不推荐在Redis中存储太大的内容，否则会阻塞其它请求。</li>
+<li>持久机制。 Redis提供了两种持久机制，包括RDB和AOF，前者是定时的持久机制，但在出现宕机时可能会出现数据丢失，后者是基于操作日志的持久机制。</li>
+<li>Redis官方推出了一个集群管理工具，叫作哨兵（Sentinel），负责在节点中选出主节点，按照分布式集群的管理办法来操作集群节点的上线、下线、监控、提醒、自动故障切换（主备切换），且实现了著名的RAFT选主协议，从而保证了系统选主的一致性。</li>
+</ul>
+<p>refer</p>
+<ul>
+<li><a href="https://dbaplus.cn/news-141-1988-1.html" target="_blank" rel="noopener">https://dbaplus.cn/news-141-1988-1.html</a></li>
+</ul>
+<h1 id="架构：-一致性Hash"><a href="#架构：-一致性Hash" class="headerlink" title="架构： 一致性Hash"></a>架构： 一致性Hash</h1><p>要回答这几个问题： 问题是什么， 解决办法， 为什么能解决， 优缺点， 其他。 </p>
+<ol>
+<li>在使用n台缓存服务器时，一种常用的负载均衡方式是，对资源o的请求使用 {\displaystyle {\mbox{hash}}(o)=o\mod n} {\mbox{hash}}(o)=o\mod n来映射到某一台缓存服务器。当增加或减少一台缓存服务器时这种方式可能会改变所有资源对应的hash值，也就是所有的缓存都失效了，这会使得缓存服务器大量集中地向原始内容服务器更新缓存。</li>
+<li>因此需要一致哈希算法来避免这样的问题。 一致哈希尽可能使同一个资源映射到同一台缓存服务器。这种方式要求增加一台缓存服务器时，新的服务器尽量分担存储其他所有服务器的缓存资源。减少一台缓存服务器时，其他所有服务器也可以尽量分担存储它的缓存资源。 一致哈希算法的主要思想是将每个缓存服务器与一个或多个哈希值域区间关联起来，其中区间边界通过计算缓存服务器对应的哈希值来决定。</li>
+<li>一致哈希将每个对象映射到圆环边上的一个点，系统再将可用的节点机器映射到圆环的不同位置。查找某个对象对应的机器时，需要用一致哈希算法计算得到对象对应圆环边上位置，沿着圆环边上查找直到遇到某个节点机器，这台机器即为对象应该保存的位置。</li>
+<li><ul>
+<li>就是用一个圆环来实现这个东西。 </li>
+</ul>
+</li>
+<li>几个特点</li>
+</ol>
+<ul>
+<li>冗余少</li>
+<li>负载均衡</li>
+<li>过渡平滑</li>
+<li>存储均衡</li>
+<li>关键词单调</li>
+</ul>
+<h1 id="如何解决缓存的几个问题-缓存穿透，-缓存并发-缓存失效。"><a href="#如何解决缓存的几个问题-缓存穿透，-缓存并发-缓存失效。" class="headerlink" title="如何解决缓存的几个问题 缓存穿透， 缓存并发 缓存失效。"></a>如何解决缓存的几个问题 缓存穿透， 缓存并发 缓存失效。</h1><p>几个问题</p>
+<ol>
+<li>缓存穿透</li>
+</ol>
+<p>我们在项目中使用缓存通常都是先检查缓存中是否存在，如果存在直接返回缓存内容，如果不存在就直接查询数据库然后再缓存查询结果返回。这个时候如果我们查询的某一个数据在缓存中一直不存在，就会造成每一次请求都查询DB，这样缓存就失去了意义，在流量大时，可能DB就挂掉了。</p>
+<p>要是有人利用不存在的key频繁攻击我们的应用，这就是漏洞。</p>
+<p>如果是API 对外提供的， 确实有这个风险。 </p>
+<p>如何解决： </p>
+<ul>
+<li>可以把这个不存在的key 设置一个值， 应用可以来决定是否等待。 还是放弃。 如果有值了， 就避免透传到数据库， 从而把大量请求挡在了缓存之中。 </li>
+<li>实际上， 我们的业务场景不需要这样处理。 </li>
+</ul>
+<ol start="2">
+<li>缓存并发<br>有时候如果网站并发访问高，一个缓存如果失效，可能出现多个进程同时查询DB，同时设置缓存的情况，如果并发确实很大，这也可能造成DB压力过大，还有缓存频繁更新的问题。</li>
+</ol>
+<ul>
+<li>我现在的想法是对缓存查询加锁，如果KEY不存在，就加锁，然后查DB入缓存，然后解锁；其他进程如果发现有锁就等待，然后等解锁后返回数据或者进入DB查询。</li>
+</ul>
+<ol start="3">
+<li>缓存失效<br>是说如果缓存在一段时间内一起失效， db的压力凸显。 </li>
+</ol>
+<ul>
+<li>没有完美的解决办法， 尽量让失效点均匀分布， </li>
+<li>我们的业务暂时不需要。 </li>
+</ul>
+<h1 id="列举一个常用的redis-客户端的并发模型-still-todo"><a href="#列举一个常用的redis-客户端的并发模型-still-todo" class="headerlink" title="列举一个常用的redis 客户端的并发模型  - still todo"></a>列举一个常用的redis 客户端的并发模型  - still todo</h1><p>Redis 操作是原子的事实仅仅是单线程事件循环的结果。有趣的一点是, 原子性是以不额外的成本提供的 (它不需要同步)。用户可以利用它来实现乐观锁定和其他模式, 而无需支付同步开销。</p>
+<ul>
+<li>可以自己管理锁吧。 还有别的想法么 </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">App 1             Redis              App 2</span><br><span class="line"> |---- GET foo ----&gt;|                  |</span><br><span class="line"> |&lt;------ 1 --------|&lt;--- GET foo -----|</span><br><span class="line"> |                  |------- 1 -------&gt;|</span><br><span class="line"> | thinking...      |                  |</span><br><span class="line"> |                  |       thinking...|</span><br><span class="line"> |--- SET foo 2 ---&gt;|                  |</span><br><span class="line"> |&lt;----- OK --------|&lt;--- SET foo 2 ---|</span><br><span class="line"> |                  |------ OK -------&gt;|</span><br></pre></td></tr></table></figure>
+<h1 id="zk-功能-如何选举"><a href="#zk-功能-如何选举" class="headerlink" title="zk 功能  如何选举"></a>zk 功能  如何选举</h1><p>统一命名服务、状态同步服务、集群管理、分布式应用配置项的管理等工作</p>
+<ul>
+<li>统一命名服务</li>
+</ul>
+<p>统一命名服务<br>在分布式系统中，经常需要给一个资源生成一个唯一的ID，在没有中心管理结点的情况下生成这个ID并不是一件很容易的事儿。zk就提供了这样一个命名服务。</p>
+<p>一般是使用create方法，创建一个自动编号的节点。</p>
+<ul>
+<li>共享锁</li>
+<li>队列管理</li>
+<li>管理集群</li>
+<li></li>
+</ul>
+<p>dubbo中采用zookeeper来作注册中心</p>
+<p>HBase要用到zk，这个已经有答主提到，就不用细说了。Hadoop也是需要用到zookeeper的，用来管理集群中的NameNode。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/09/09/ms-redis/" data-id="cjmxfc3e8000jd8tvfk43pw8s" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/redis/">redis</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试/">面试</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/09/10/数据库常见问题/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          数据库常见问题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/07/microserviceAndVertx/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">微服务和Vertx</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/arch/">arch</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/arch/分布式/">分布式</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/network/">network</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/">面试</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/db/">db</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/">java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/IO/">IO</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/JVM/">JVM</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/basic/">basic</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/并发/">并发</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/大数据/">大数据</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/大数据/redis/">redis</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/架构/">架构</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/架构/微服务/">微服务</a></li></ul></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/">AI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IO/">IO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/arch/">arch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/db/">db</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/microservice/">microservice</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vertx/">vertx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式事务/">分布式事务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/arch/" style="font-size: 10px;">arch</a> <a href="/tags/db/" style="font-size: 10px;">db</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/jvm/" style="font-size: 10px;">jvm</a> <a href="/tags/microservice/" style="font-size: 10px;">microservice</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/vertx/" style="font-size: 10px;">vertx</a> <a href="/tags/分布式事务/" style="font-size: 10px;">分布式事务</a> <a href="/tags/并发/" style="font-size: 10px;">并发</a> <a href="/tags/架构/" style="font-size: 10px;">架构</a> <a href="/tags/面试/" style="font-size: 20px;">面试</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/10/05/关于机器学习流程以及几个度量的理解/">关于机器学习流程以及几个度量的理解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/Http-time-wait状态/">Http_time_wait状态</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/二段式，三段式和Paxos/">二段式，三段式和Paxos</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/kubnetes-notes/">kubnetes_notes</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/28/分布式/">分布式</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 hzhang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+<!-- 站内搜索-Swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script>
+  </div>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>关于机器学习流程以及几个度量的理解 | Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="接触机器学习一段时间了， 但是对如何衡量和提高机器学习效率的几个问题不是很清楚。 这篇文章是根据《Python 机器学习》第六章的内容整理而来。">
+<meta name="keywords" content="AI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于机器学习流程以及几个度量的理解">
+<meta property="og:url" content="http://yoursite.com/2018/10/05/关于机器学习流程以及几个度量的理解/index.html">
+<meta property="og:site_name" content="Tech">
+<meta property="og:description" content="接触机器学习一段时间了， 但是对如何衡量和提高机器学习效率的几个问题不是很清楚。 这篇文章是根据《Python 机器学习》第六章的内容整理而来。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/variance_bias.png">
+<meta property="og:image" content="http://yoursite.com/2018/10/05/关于机器学习流程以及几个度量的理解/variance_bias.png">
+<meta property="og:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/crossvalidation.png">
+<meta property="og:image" content="http://yoursite.com/2018/10/05/关于机器学习流程以及几个度量的理解/crossvalidation.png">
+<meta property="og:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/confusionmatrix.png">
+<meta property="og:image" content="http://yoursite.com/2018/10/05/关于机器学习流程以及几个度量的理解/confusionmatrix.png">
+<meta property="og:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/1.bmp">
+<meta property="og:image" content="http://yoursite.com/2018/10/05/关于机器学习流程以及几个度量的理解/1.bmp">
+<meta property="og:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/2.bmp">
+<meta property="og:image" content="http://yoursite.com/2018/10/05/关于机器学习流程以及几个度量的理解/2.bmp">
+<meta property="og:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/3.bmp">
+<meta property="og:image" content="http://yoursite.com/2018/10/05/关于机器学习流程以及几个度量的理解/3.bmp">
+<meta property="og:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/下载.png">
+<meta property="og:image" content="http://yoursite.com/2018/10/05/关于机器学习流程以及几个度量的理解/下载.png">
+<meta property="og:updated_time" content="2018-10-06T12:38:44.121Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于机器学习流程以及几个度量的理解">
+<meta name="twitter:description" content="接触机器学习一段时间了， 但是对如何衡量和提高机器学习效率的几个问题不是很清楚。 这篇文章是根据《Python 机器学习》第六章的内容整理而来。">
+<meta name="twitter:image" content="c:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/variance_bias.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Tech</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-关于机器学习流程以及几个度量的理解" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/05/关于机器学习流程以及几个度量的理解/" class="article-date">
+  <time datetime="2018-10-05T09:12:30.000Z" itemprop="datePublished">2018-10-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/AI/">AI</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      关于机器学习流程以及几个度量的理解
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+	    
+<div id="toc">
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#K叠交叉验证"><span class="toc-text">- K叠交叉验证</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如何根据学习和验证曲线来验证算法"><span class="toc-text">- 如何根据学习和验证曲线来验证算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#方差-偏差"><span class="toc-text">方差 偏差</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#学习曲线"><span class="toc-text">学习曲线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#validation-curve"><span class="toc-text">validation_curve</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如何调优学习模型的超参数"><span class="toc-text">- 如何调优学习模型的超参数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如何选择不同学习模型"><span class="toc-text">- 如何选择不同学习模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#看懂不同的性能度量参数"><span class="toc-text">看懂不同的性能度量参数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#注意关于准确率"><span class="toc-text">注意关于准确率</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其他"><span class="toc-text">其他</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关于ROC-AOC"><span class="toc-text">关于ROC AOC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何看"><span class="toc-text">如何看</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#precision-recall-curve"><span class="toc-text">precision recall curve</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#整理一段实用的代码"><span class="toc-text">整理一段实用的代码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#tags"><span class="toc-text">tags:</span></a></li></ol></li></ol>
+</div>
+
+        <p>接触机器学习一段时间了， 但是对如何衡量和提高机器学习效率的几个问题不是很清楚。 这篇文章是根据《Python 机器学习》第六章的内容整理而来。 </p>
+<a id="more"></a>
+<p>概要</p>
+<ul>
+<li>K叠交叉验证 </li>
+<li>高方差 高偏差</li>
+<li>如何更具学习和验证曲线来验证算法</li>
+<li>如何调优学习模型的超参数</li>
+<li>如何衡量不同学习模型的性能</li>
+</ul>
+<h1 id="K叠交叉验证"><a href="#K叠交叉验证" class="headerlink" title="- K叠交叉验证"></a>- K叠交叉验证</h1><p>在初始的机器学习流程中， 我们会把训练集和和测试集合分开， 应用训练集合来训练模型， 用测试集合来验证结果。 但是不管你随机分， 还是直接根据序号按照百分比来分，都很难保证这个测试集合的规律和训练集合的规律类型， 或者说如何能够保证测试集合能够反映训练集合的效果。</p>
+<p>必须换一个角度。 比如求多次平均。 K fold 交叉验证就是这样得来的。 </p>
+<ul>
+<li>如何操作呢</li>
+</ul>
+<p>把数据集合分成k份， 第一次用k-1份来训练， 用第k份来测试。 第二呢， 交换一下。如此以往k次以后来算k次的平均的准确率，这样得到的结果相比较与一次的结果， 更能够反正这个模型在整个样本集合的效果。 </p>
+<h1 id="如何根据学习和验证曲线来验证算法"><a href="#如何根据学习和验证曲线来验证算法" class="headerlink" title="- 如何根据学习和验证曲线来验证算法"></a>- 如何根据学习和验证曲线来验证算法</h1><h2 id="方差-偏差"><a href="#方差-偏差" class="headerlink" title="方差 偏差"></a>方差 偏差</h2><p>方差是 variance， 偏差是 bias。 初学者经常弄不清楚两者的区别和联系， 乃至于如何判断以及处理。 </p>
+<ul>
+<li>The bias is an error from erroneous assumptions in the learning algorithm. High bias can cause an algorithm to miss the relevant relations between features and target outputs (underfitting).</li>
+<li>The variance is an error from sensitivity to small fluctuations in the training set. High variance can cause an algorithm to model the random noise in the training data, rather than the intended outputs (overfitting).</li>
+</ul>
+<p>偏差就是差距， 就是和真实值之间的差距。如果越大， 预示着模型预测不准确， 欠拟合。 </p>
+<p>而方差呢是指的预测结果的离散程度。 如果越大呢， 预示着过拟合。 </p>
+<h2 id="学习曲线"><a href="#学习曲线" class="headerlink" title="学习曲线"></a>学习曲线</h2><p>而如下图所表示的， 随着样本的增大， 准确率都是在变化， 并且趋于稳定。 一个是高偏差， 一个是高方差， 一个是我们期望的低方差和低偏差。 </p>
+<p><img src="C:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/variance_bias.png" alt="image"><br><img src="variance_bias.png" alt="image"></p>
+<p>这个学习曲线表明了欠拟合还是过拟合。 </p>
+<p>那么如果是欠拟合， 如何提高呢？ 需要进一步寻找相关性强的特征， 然后来提高准确率。 减少正则化参数。 </p>
+<p>如果是过拟合呢， 有些特征可能没有用处。 获取更多的数据。 增加噪声。结合各种模型。  使用正则化方法。 </p>
+<p>在scikit learn 里面用 learning_curve， 通过样本的增加来看是欠拟合 过拟合还是符合期望。 </p>
+<h2 id="validation-curve"><a href="#validation-curve" class="headerlink" title="validation_curve"></a>validation_curve</h2><p>这个呢不是为了画学习曲线而是通过调整超参数来看是否可以提高欠拟合和过拟合。 </p>
+<ul>
+<li>默认都是用stratified k-fold cross-validation来估计结果。 </li>
+<li>这个是在同样的样本中的 。 </li>
+<li>TODO</li>
+</ul>
+<h1 id="如何调优学习模型的超参数"><a href="#如何调优学习模型的超参数" class="headerlink" title="- 如何调优学习模型的超参数"></a>- 如何调优学习模型的超参数</h1><p>用grid search 来寻找最好的精度。 </p>
+<p>不同的模型有不同的超参数。 所谓超参数， 是相对于参数而言。 参数是模型fit数据的时候自动调整的， 而超参数则是预设的， 不同的超参数所适应的模型范畴不同。 所以需要在里面寻找最合适你的数据的。 </p>
+<p>比如： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">param_range = [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]</span><br><span class="line"></span><br><span class="line">param_grid = [&#123;&apos;svc__C&apos;: param_range, </span><br><span class="line">               &apos;svc__kernel&apos;: [&apos;linear&apos;]&#125;,</span><br><span class="line">              &#123;&apos;svc__C&apos;: param_range, </span><br><span class="line">               &apos;svc__gamma&apos;: param_range, </span><br><span class="line">               &apos;svc__kernel&apos;: [&apos;rbf&apos;]&#125;]</span><br><span class="line"></span><br><span class="line">gs = GridSearchCV(estimator=pipe_svc, </span><br><span class="line">                  param_grid=param_grid, </span><br><span class="line">                  scoring=&apos;accuracy&apos;, </span><br><span class="line">                  cv=10,</span><br><span class="line">                  n_jobs=-1)</span><br><span class="line">gs = gs.fit(X_train, y_train)</span><br><span class="line"></span><br><span class="line"># the best</span><br><span class="line">clf = gs.best_estimator_</span><br><span class="line">clf.fit(X_train, y_train)</span><br><span class="line">print(&apos;Test accuracy: %.3f&apos; % clf.score(X_test, y_test))</span><br></pre></td></tr></table></figure>
+<h1 id="如何选择不同学习模型"><a href="#如何选择不同学习模型" class="headerlink" title="- 如何选择不同学习模型"></a>- 如何选择不同学习模型</h1><p>这部分是如何通过内嵌的交叉验证来进行算法选择。 </p>
+<p><img src="C:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/crossvalidation.png" alt="image"><br><img src="crossvalidation.png" alt="image"></p>
+<p>这个还是思考了一下， 这是根据一篇论文来的。<br>首先问题提出是说如何来衡量不同学习模型的性能， 在实践阶段呢， 我们一般会把数据集合划分为 训练集合， 交叉验证集合， 测试集合。 </p>
+<ul>
+<li>很容易理解， 在训练集合训练模型， 然后交叉验证集合验证模型。 最后在测试集合来拿到准确率。 </li>
+<li>这个理论是这样做的。 首先把数据集合根据kfold 来划分k份。 对于k-1训练，然后test 来验证。 而k-1 训练的过程呢， 用一部分来进行训练， 另外一部分进行验证。</li>
+<li>在训练的时候呢， 可以用grid search。 </li>
+</ul>
+<p>实例如下</p>
+<p>这段代码首先把训练的集合来用5fold来进行cross 验证， 就是用五次的平均精确来比较。<br>对每次呢， 是遍历了svc的一些超参数param_grid 拿到最好的参数。 这里的cv也是5.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">gs = GridSearchCV(estimator=pipe_svc,</span><br><span class="line">                  param_grid=param_grid,</span><br><span class="line">                  scoring=&apos;accuracy&apos;,</span><br><span class="line">                  cv=2)</span><br><span class="line"></span><br><span class="line">scores = cross_val_score(gs, X_train, y_train, </span><br><span class="line">                         scoring=&apos;accuracy&apos;, cv=5)</span><br><span class="line">print(&apos;CV accuracy: %.3f +/- %.3f&apos; % (np.mean(scores),</span><br><span class="line">                                      np.std(scores)))</span><br></pre></td></tr></table></figure></p>
+<p>然后这个结果才是应用于unseen 的数据的， 那超参数到底是什么呢？ </p>
+<p>第二个模型</p>
+<p>这个同样是用2叠的数据分类来进行超参数的turning- 两次， 每次用一个训练， 一个测试。 然后求最好的。<br>然后呢， 用这个模型在5叠的平均值作为它的结果。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.tree import DecisionTreeClassifier</span><br><span class="line"></span><br><span class="line">gs = GridSearchCV(estimator=DecisionTreeClassifier(random_state=0),</span><br><span class="line">                  param_grid=[&#123;&apos;max_depth&apos;: [1, 2, 3, 4, 5, 6, 7, None]&#125;],</span><br><span class="line">                  scoring=&apos;accuracy&apos;,</span><br><span class="line">                  cv=2)</span><br><span class="line"></span><br><span class="line">scores = cross_val_score(gs, X_train, y_train, </span><br><span class="line">                         scoring=&apos;accuracy&apos;, cv=5)</span><br><span class="line">print(&apos;CV accuracy: %.3f +/- %.3f&apos; % (np.mean(scores), </span><br><span class="line">                                      np.std(scores)))</span><br></pre></td></tr></table></figure></p>
+<p>TODO 如何实操。<br>我也可以这样做， 就是两层。 这里面第一轮是遍历找好的超参数。<br>第二轮是找到精确值。 问题是每次的最好的精确值是一样的超参数么， 这个超参数又是从哪里获得呢。 </p>
+<p>鉴于上面的问题， 我目前手工划分测试集合， 这个是对的。<br>然后呢直接用那些来进行调参和优化， 并没有利用5*2的这种模型。 而是直接先grid， 然后拿到了之后呢进行准确率的k fold的平均值比较。 </p>
+<p>refer</p>
+<ul>
+<li>Bias in Error Estimation When Using Cross-Validation for Model Selection - paper</li>
+</ul>
+<h1 id="看懂不同的性能度量参数"><a href="#看懂不同的性能度量参数" class="headerlink" title="看懂不同的性能度量参数"></a>看懂不同的性能度量参数</h1><p>除了准确率， 还有别的参数， 精确率， 召回率， F1-score</p>
+<p>首先看混淆矩阵， </p>
+<ul>
+<li>TF true positives  正确的预测对了。 预测成正确的。</li>
+<li>FN false Negative  正确的预测错了。 预测成错误的。 </li>
+<li>FP False positive  错误的预测错了。 预测成正确的。</li>
+<li><p>TN True Negative   错误的预测对了。 预测成错误的。 </p>
+</li>
+<li><p>所谓准确率 就是所有预测对的， 对的和错误都预测对的， 除以所有的结果。 </p>
+</li>
+<li>所谓精确率， 是从结果来看， 所有预测称为正确中， 准确预测的比例。 就是 TF除以（TF+FP） 纵轴。 </li>
+<li>所谓召回率， 就是从原来的样本为真的来看， 所有预测为正确的占过去所有为真的比例。 TF 除以（TF+FN）  横轴</li>
+<li>F1 score 是两者的综合， 就是2 <em> （PRE </em> REC）除以（PRE+REC）</li>
+</ul>
+<p><img src="C:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/confusionmatrix.png" alt="image"><br><img src="confusionmatrix.png" alt="image"></p>
+<h2 id="注意关于准确率"><a href="#注意关于准确率" class="headerlink" title="注意关于准确率"></a>注意关于准确率</h2><p>目前都是以准确率为例， 其实以上所有的函数都是可以设置是准确率， 精确率， 召回率 还是F1的。 </p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>如果直接求解 recall_sore, precision_score 用scikit learn， 你会发现结果又出入， 因为默认是以1为计算， 而不是0计算。也就是说正反是反的。 你可以指定。<br>或者你直接用这个classification_report， 默认就是0 来计算。 </p>
+<p>参考</p>
+<ul>
+<li>from sklearn.metrics import recall_score</li>
+<li>from sklearn.metrics import Auc</li>
+<li>from sklearn.metrics import f1_score</li>
+<li>from sklearn.metrics import precision_score</li>
+</ul>
+<h2 id="关于ROC-AOC"><a href="#关于ROC-AOC" class="headerlink" title="关于ROC AOC"></a>关于ROC AOC</h2><p>我用它来计算了一下在训练集合的效果。 这是看了一下这种算法在这个集合上的状态。 </p>
+<p>ROC和AUC定义<br>ROC全称是“受试者工作特征”（Receiver Operating Characteristic）。ROC曲线的面积就是AUC（Area Under the Curve）。AUC用于衡量“二分类问题”机器学习算法性能（泛化能力）。</p>
+<blockquote>
+<p>TPR against the FPR<br>Y        X<br>TPR 就是 true positive rate     原来是正确， 现在预测是正确。     问题原来是正确， 现在预测是错误的， 这部分怎么说， 有没有类别。<br>FPR 就是false positive rate。 就是原来是false， 现在预测称正确。 </p>
+</blockquote>
+<blockquote>
+<p>TPR (True Positive Rate) / Recall /Sensitivity<br> TP 除以所有本身是真的。  正确的预测正确的。<br> <img src="C:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/1.bmp" alt="image"><br><img src="1.bmp" alt=""></p>
+</blockquote>
+<blockquote>
+<p>Specificity<br>  TN true negative 是就是错误的预测成错误的。 FP 错误的预测成正确的。<br>原来都是错误的， 现在<br> <img src="C:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/2.bmp" alt="image"><br><img src="2.bmp" alt=""></p>
+</blockquote>
+<blockquote>
+<p>FPR<br>    就是说错误预测成正确的， 占所有本身错误的。 这个是错误中预测错误的。<br> <img src="C:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/3.bmp" alt="image"><br><img src="3.bmp" alt=""></p>
+</blockquote>
+<h2 id="如何看"><a href="#如何看" class="headerlink" title="如何看"></a>如何看</h2><p>如何看呢。<br>A poor model has AUC near to the 0 which means it has worst measure of separability. In fact it means it is reciprocating the result. It is predicting 0s as 1s and 1s as 0s. And when AUC is 0.5, it means model has no class separation capacity whatsoever.</p>
+<p>最差的就是0这条线， 就是说错误的预测正确， 正确的预测错误。<br>对角线， 是说各50%</p>
+<p>下面是我的代码的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"># ROC</span><br><span class="line">from sklearn.metrics import roc_curve, auc</span><br><span class="line">from scipy import interp</span><br><span class="line">import numpy as np</span><br><span class="line">from sklearn.model_selection import StratifiedKFold</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">%matplotlib inline</span><br><span class="line">#selectedX, selectedY</span><br><span class="line"># notinclude scale, so use scaled. </span><br><span class="line"></span><br><span class="line"># pipe_lr = make_pipeline(StandardScaler(),</span><br><span class="line">#                         PCA(n_components=2),</span><br><span class="line">#                         LogisticRegression(penalty=&apos;l2&apos;, </span><br><span class="line">#                                            random_state=1, </span><br><span class="line">#                                            C=100.0))</span><br><span class="line">pipe_lr = GaussianNB()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">X_train2 = X_train</span><br><span class="line">y_train= Y_train</span><br><span class="line">#     X_train2 = X_train[:, [4, 14]]</span><br><span class="line"></span><br><span class="line">cv = list(StratifiedKFold(n_splits=3, </span><br><span class="line">                          random_state=1).split(X_train, y_train))</span><br><span class="line"></span><br><span class="line">fig = plt.figure(figsize=(7, 5))</span><br><span class="line"></span><br><span class="line">mean_tpr = 0.0</span><br><span class="line">mean_fpr = np.linspace(0, 1, 100)</span><br><span class="line">all_tpr = []</span><br><span class="line"></span><br><span class="line">for i, (train, test) in enumerate(cv):</span><br><span class="line">    probas = pipe_lr.fit(X_train2[train],</span><br><span class="line">                         y_train[train]).predict_proba(X_train2[test])</span><br><span class="line"></span><br><span class="line">    fpr, tpr, thresholds = roc_curve(y_train[test],</span><br><span class="line">                                     probas[:, 1],</span><br><span class="line">                                     pos_label=1)</span><br><span class="line">    mean_tpr += interp(mean_fpr, fpr, tpr)</span><br><span class="line">    mean_tpr[0] = 0.0</span><br><span class="line">    roc_auc = auc(fpr, tpr)</span><br><span class="line">    plt.plot(fpr,</span><br><span class="line">             tpr,</span><br><span class="line">             label=&apos;ROC fold %d (area = %0.2f)&apos;</span><br><span class="line">                   % (i+1, roc_auc))</span><br><span class="line"></span><br><span class="line">plt.plot([0, 1],</span><br><span class="line">         [0, 1],</span><br><span class="line">         linestyle=&apos;--&apos;,</span><br><span class="line">         color=(0.6, 0.6, 0.6),</span><br><span class="line">         label=&apos;random guessing&apos;)</span><br><span class="line"></span><br><span class="line">mean_tpr /= len(cv)</span><br><span class="line">mean_tpr[-1] = 1.0</span><br><span class="line">mean_auc = auc(mean_fpr, mean_tpr)</span><br><span class="line">plt.plot(mean_fpr, mean_tpr, &apos;k--&apos;,</span><br><span class="line">         label=&apos;mean ROC (area = %0.2f)&apos; % mean_auc, lw=2)</span><br><span class="line">plt.plot([0, 0, 1],</span><br><span class="line">         [0, 1, 1],</span><br><span class="line">         linestyle=&apos;:&apos;,</span><br><span class="line">         color=&apos;black&apos;,</span><br><span class="line">         label=&apos;perfect performance&apos;)</span><br><span class="line"></span><br><span class="line">plt.xlim([-0.05, 1.05])</span><br><span class="line">plt.ylim([-0.05, 1.05])</span><br><span class="line">plt.xlabel(&apos;false positive rate&apos;)</span><br><span class="line">plt.ylabel(&apos;true positive rate&apos;)</span><br><span class="line">plt.legend(loc=&quot;lower right&quot;)</span><br><span class="line"></span><br><span class="line">plt.tight_layout()</span><br><span class="line"># plt.savefig(&apos;images/06_10.png&apos;, dpi=300)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p> <img src="C:/developer/blog/zyhnjust.github.io/source/_posts/关于机器学习流程以及几个度量的理解/下载.png" alt="image"><br><img src="下载.png" alt=""></p>
+<h2 id="precision-recall-curve"><a href="#precision-recall-curve" class="headerlink" title="precision recall curve"></a>precision recall curve</h2><p>TODO</p>
+<h1 id="整理一段实用的代码"><a href="#整理一段实用的代码" class="headerlink" title="整理一段实用的代码"></a>整理一段实用的代码</h1><p>TODO</p>
+<ul>
+<li>precision recall curve </li>
+<li>关于几个衡量标准 - 遇到新的再说</li>
+<li>关于ROC 学习  - 清楚了， 进一步如何使用需要几千。 </li>
+<li>这个5*2 需要继续深入么  - 基本清楚。 但是没有实用。</li>
+</ul>
+<p>refer</p>
+<ol>
+<li><a href="https://towardsdatascience.com/understanding-auc-roc-curve-68b2303cc9c5" target="_blank" rel="noopener">https://towardsdatascience.com/understanding-auc-roc-curve-68b2303cc9c5</a> for ROC</li>
+<li>scikit learn doc</li>
+</ol>
+<p>体会</p>
+<ul>
+<li>就是grid 找参数。 </li>
+<li>curve 来看是否过拟合</li>
+<li>kfold 来评判精确率</li>
+<li>精确率 召回率 准确率 根据场景不同有不同的选择。 </li>
+<li>下面关于测试集合的选择。 - 这个还是难事， 找找kaggle 如何做的？ </li>
+</ul>
+<hr>
+<p>title: 关于机器学习流程以及几个度量的理解<br>date: 2018-10-06 17:04:43</p>
+<h2 id="tags"><a href="#tags" class="headerlink" title="tags:"></a>tags:</h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/05/关于机器学习流程以及几个度量的理解/" data-id="cjmxfdg6i0000b0tv3m80ef0k" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI/">AI</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/09/29/Http-time-wait状态/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Http_time_wait状态</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/arch/">arch</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/arch/分布式/">分布式</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/network/">network</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/">面试</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/db/">db</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/">java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/IO/">IO</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/JVM/">JVM</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/basic/">basic</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/并发/">并发</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/大数据/">大数据</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/大数据/redis/">redis</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/架构/">架构</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/架构/微服务/">微服务</a></li></ul></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/">AI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IO/">IO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/arch/">arch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/db/">db</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/microservice/">microservice</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vertx/">vertx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式事务/">分布式事务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/arch/" style="font-size: 10px;">arch</a> <a href="/tags/db/" style="font-size: 10px;">db</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/jvm/" style="font-size: 10px;">jvm</a> <a href="/tags/microservice/" style="font-size: 10px;">microservice</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/vertx/" style="font-size: 10px;">vertx</a> <a href="/tags/分布式事务/" style="font-size: 10px;">分布式事务</a> <a href="/tags/并发/" style="font-size: 10px;">并发</a> <a href="/tags/架构/" style="font-size: 10px;">架构</a> <a href="/tags/面试/" style="font-size: 20px;">面试</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/10/05/关于机器学习流程以及几个度量的理解/">关于机器学习流程以及几个度量的理解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/Http-time-wait状态/">Http_time_wait状态</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/二段式，三段式和Paxos/">二段式，三段式和Paxos</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/kubnetes-notes/">kubnetes_notes</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/28/分布式/">分布式</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 hzhang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+<!-- 站内搜索-Swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script>
+  </div>
+</body>
+</html>

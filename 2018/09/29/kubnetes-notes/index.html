@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>kubnetes_notes | Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="整理一下k8s 相关的理解以及实践， 并理一下下一步深入的方向">
+<meta name="keywords" content="arch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubnetes_notes">
+<meta property="og:url" content="http://yoursite.com/2018/09/29/kubnetes-notes/index.html">
+<meta property="og:site_name" content="Tech">
+<meta property="og:description" content="整理一下k8s 相关的理解以及实践， 并理一下下一步深入的方向">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-10-06T09:39:23.720Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kubnetes_notes">
+<meta name="twitter:description" content="整理一下k8s 相关的理解以及实践， 并理一下下一步深入的方向">
+  
+    <link rel="alternate" href="/atom.xml" title="Tech" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Tech</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-kubnetes-notes" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/29/kubnetes-notes/" class="article-date">
+  <time datetime="2018-09-29T02:06:11.000Z" itemprop="datePublished">2018-09-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      kubnetes_notes
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+	    
+<div id="toc">
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#K8s-是做什么的，-我们的使用"><span class="toc-text">K8s 是做什么的， 我们的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#是什么"><span class="toc-text">是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#目前的好处"><span class="toc-text">目前的好处</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不利的地方"><span class="toc-text">不利的地方</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#项目中的使用。"><span class="toc-text">项目中的使用。</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本结构和原理"><span class="toc-text">基本结构和原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本组件"><span class="toc-text">基本组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本原理"><span class="toc-text">- 基本原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如何安装，-维护，-监控，-日志"><span class="toc-text">如何安装， 维护， 监控， 日志</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#遇到哪些问题-排查"><span class="toc-text">遇到哪些问题 排查</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#网络问题"><span class="toc-text">网络问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#状态显示不对"><span class="toc-text">状态显示不对</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#部署"><span class="toc-text">部署</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#资源不足的问题。"><span class="toc-text">资源不足的问题。</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TODO"><span class="toc-text">TODO</span></a></li></ol>
+</div>
+
+        <p>整理一下k8s 相关的理解以及实践， 并理一下下一步深入的方向</p>
+<a id="more"></a>
+<h1 id="K8s-是做什么的，-我们的使用"><a href="#K8s-是做什么的，-我们的使用" class="headerlink" title="K8s 是做什么的， 我们的使用"></a>K8s 是做什么的， 我们的使用</h1><h2 id="是什么"><a href="#是什么" class="headerlink" title="是什么"></a>是什么</h2><p>微服务 image 编排。 image 编排维护成为了问题， mesos k8s。 k8s 比较流行一些。 </p>
+<h2 id="目前的好处"><a href="#目前的好处" class="headerlink" title="目前的好处"></a>目前的好处</h2><p>微服务， 容易扩容， 容易部署。 kubctl 一个命令就搞定了。 </p>
+<p>每个服务都是无服务的， 另外一种情况是一个集群。 </p>
+<h2 id="不利的地方"><a href="#不利的地方" class="headerlink" title="不利的地方"></a>不利的地方</h2><p>维护的成本， 出了问题的解决。 日志的处理。 监控。 </p>
+<h2 id="项目中的使用。"><a href="#项目中的使用。" class="headerlink" title="项目中的使用。"></a>项目中的使用。</h2><p>作为主要的业务应用。 每一个。 </p>
+<ul>
+<li>安装的话， 手工也可以装。 但是我们用rancher 来安装的。 但是定制一些东西。 确实容易一些。 </li>
+<li>我们现在12个节点， 最多20个节点的node。 微服务大约是在10个左右。 </li>
+<li><p>前台是     -ingress -harproxy 做的负载均衡。 </p>
+<p>比如我们coper的 来处理设备的， 我们放了三个。 每个verst 可以做全局锁。 对一个设备只能同时做这个一个事情。 三个是个集群， 有一个share data 的东西。 hazelcast 等。 </p>
+</li>
+</ul>
+<h1 id="基本结构和原理"><a href="#基本结构和原理" class="headerlink" title="基本结构和原理"></a>基本结构和原理</h1><h2 id="基本组件"><a href="#基本组件" class="headerlink" title="基本组件"></a>基本组件</h2><p>包含哪些核心部分。 起什么作用。 </p>
+<ul>
+<li><p>pod，<br>  pod 最小的运行单元。 里面更小的component是 container （一个pod 上一个docker image 运行。 ）， 每个 跑一个proces谁<br>  可以单独部署 ， 但是一般不那么用， 用deployment 来</p>
+</li>
+<li><p>deploymnet<br>  相当于一个魔板， 以前用过replicaset 后来的版本其实不太用了。 功能有一些强化。 </p>
+</li>
+<li><p>service<br>  答：为pod稳定地提供服务发现和负载均衡的能力。</p>
+</li>
+<li><p>Ingress<br>  对外的 </p>
+</li>
+<li><p>PV PVC<br>  答：用于存储持久化数据，不同类型的Volume有不同的生命周期。</p>
+</li>
+<li><p>configmap<br>如何传变量。 - env</p>
+</li>
+</ul>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="- 基本原理"></a>- 基本原理</h2><ul>
+<li>状态是保存在 etcd - raft。 – 看过论文。 notes。 一个leader。 <pre><code>选举； 如何决定。 计数。 
+</code></pre></li>
+<li>用namespace 来分别命名空间。 我们kube system， 我们定义了cloud</li>
+<li><p>可以用label 来制定哪些node 做哪些事情</p>
+</li>
+<li><p>service</p>
+</li>
+<li><p>如何schedule 分配 这是挺重要的<br>  schedule 是在master 上， 然后他要决定哪个node 来做这个事情。<br>  It’s not responsible for actually running the pod – that’s the kubelet’s job.<br>调度的过程分两步，首先是做筛选(predict)，其次是排序(priorities)。<br>预选：根据配置的Predicates Policies（默认为DefaultProvider中定义的default predicates policies集合）过滤掉那些不满足这些Policies的的Nodes，剩下的Nodes就作为优选的输入。</p>
+</li>
+<li><p>service 的问题<br>  Pod的IP是在docker0网段动态分配的 会变所以service<br>  Kubernetes service有以下三种类型：</p>
+<ul>
+<li>ClusterIP:提供一个集群内部的虚拟IP以供Pod访问。</li>
+<li>NodePort:在每个Node上打开一个端口以供外部访问。</li>
+<li><p>LoadBalancer:通过外部的负载均衡器来访问。</p>
+<p>port和nodePort都是service的端口，前者暴露给集群内客户访问服务，后者暴露给集群外客户访问服务。从这两个端口到来的数据都需要经过反向代理kube-proxy流入后端pod的targetPod，从而到达pod上的容器内。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="如何安装，-维护，-监控，-日志"><a href="#如何安装，-维护，-监控，-日志" class="headerlink" title="如何安装， 维护， 监控， 日志"></a>如何安装， 维护， 监控， 日志</h1><ul>
+<li><p>安装</p>
+<ul>
+<li>salt pilar –》</li>
+<li>Grains是saltstack的组件，用于收集salt-minion在启动时候的信息，又称为静态信息。</li>
+<li>Pillar : 用于存储master分配给minion的数据信息。 top.sls jinjia 处理的</li>
+</ul>
+</li>
+<li><p>如何监控<br>  两个层面的。<br>  第一个是node level- nagios<br>  第二个是自己的监控， 我们用pu。 </p>
+</li>
+<li><p>如何log<br>  fluentbit？如何安装以及工作的。<br>  也是pod， 然后可以收集， 配置到elastic search 去的。 </p>
+</li>
+<li><p>维护<br>  加host。 k8s 自己会来做这个</p>
+</li>
+<li><p>coreDNS 就是自己寻找的。 - 这个</p>
+</li>
+</ul>
+<h1 id="遇到哪些问题-排查"><a href="#遇到哪些问题-排查" class="headerlink" title="遇到哪些问题 排查"></a>遇到哪些问题 排查</h1><h2 id="网络问题"><a href="#网络问题" class="headerlink" title="网络问题"></a>网络问题</h2><p>– 少。 </p>
+<h2 id="状态显示不对"><a href="#状态显示不对" class="headerlink" title="状态显示不对"></a>状态显示不对</h2><pre><code>有的时候状态不及时。 要等于下
+其实并不是。 不清楚。 你主要找image 下载了没有。 
+是不是log 有没问题。 
+</code></pre><h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><pre><code>-- 就是deploy image。 registry的加密。 证书的处理。 
+</code></pre><h2 id="资源不足的问题。"><a href="#资源不足的问题。" class="headerlink" title="资源不足的问题。"></a>资源不足的问题。</h2><pre><code>- 不是太深刻， 但是发现多了就申请了新的node。 5-》11
+加host。 k8s 自己会来做这个
+</code></pre><h1 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h1><ol>
+<li>service<br>clster ip coreDNS</li>
+<li>实践 关于命令的具体分析</li>
+<li>如何做scheduler的呢。 </li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/09/29/kubnetes-notes/" data-id="cjmxfc3dy000cd8tvyi28tf73" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/arch/">arch</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/09/29/二段式，三段式和Paxos/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          二段式，三段式和Paxos
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/28/分布式/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">分布式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/arch/">arch</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/arch/分布式/">分布式</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/network/">network</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/">面试</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/db/">db</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/">java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/IO/">IO</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/JVM/">JVM</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/basic/">basic</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/java/并发/">并发</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/大数据/">大数据</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/大数据/redis/">redis</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/架构/">架构</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/面试/架构/微服务/">微服务</a></li></ul></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/">AI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IO/">IO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/arch/">arch</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/db/">db</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/microservice/">microservice</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vertx/">vertx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式事务/">分布式事务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/arch/" style="font-size: 10px;">arch</a> <a href="/tags/db/" style="font-size: 10px;">db</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/jvm/" style="font-size: 10px;">jvm</a> <a href="/tags/microservice/" style="font-size: 10px;">microservice</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/vertx/" style="font-size: 10px;">vertx</a> <a href="/tags/分布式事务/" style="font-size: 10px;">分布式事务</a> <a href="/tags/并发/" style="font-size: 10px;">并发</a> <a href="/tags/架构/" style="font-size: 10px;">架构</a> <a href="/tags/面试/" style="font-size: 20px;">面试</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/10/05/关于机器学习流程以及几个度量的理解/">关于机器学习流程以及几个度量的理解</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/Http-time-wait状态/">Http_time_wait状态</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/二段式，三段式和Paxos/">二段式，三段式和Paxos</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/29/kubnetes-notes/">kubnetes_notes</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/28/分布式/">分布式</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 hzhang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+<!-- 站内搜索-Swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script>
+  </div>
+</body>
+</html>
